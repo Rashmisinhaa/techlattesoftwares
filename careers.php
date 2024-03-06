@@ -1,0 +1,32 @@
+
+<?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require("./mailing/mailfunction.php");
+
+$name = $_POST["name"];
+$phone = $_POST['phone'];
+$email = $_POST["email"];
+$applyfor = $_POST["status"];
+$experience = $_POST["experience"];
+$otherdetails = $_POST["details"];
+
+$filename = $_FILES["fileToUpload"]["name"];
+$filetype = $_FILES["fileToUpload"]["type"];
+$filesize = $_FILES["fileToUpload"]["size"];
+$tempfile = $_FILES["fileToUpload"]["tmp_name"];
+$filenameWithDirectory = "tmp-uploads/" . $name . ".pdf";  //give path of tmp-uploads folder(available in this project folder) with slash(/ or \ as per your path) at end of path
+
+$body = "<ul><li>Name: " . $name . "</li><li>Phone: " . $phone . "</li><li>Email: " . $email . "</li><li>Apply For: " . $applyfor . "</li><li>Experience: " . $experience . " Yrs.</li><li>Resume(Attached Below):</li></ul>";
+if (move_uploaded_file($tempfile, $filenameWithDirectory)) {
+    $status = mailfunction("rashmi.july14@gmail.com", "Company HR", $body, $filenameWithDirectory); //reciever
+    if ($status)
+        echo '<center><h1>Thanks! We will contact you soon.</h1></center>';
+    else
+        echo '<center><h1>Error sending message! Please try again.</h1></center>';
+} else {
+    echo "<center><h1>Error uploading file! Please try again.</h1></center>";
+    error_log("File upload failed: " . $_FILES["fileToUpload"]["error"]);
+}
